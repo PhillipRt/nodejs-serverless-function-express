@@ -38,7 +38,7 @@ export default async function handler(req, res) {
     );
 
     // Assuming the response contains the messages
-    const messages = runResponse.data.messages;
+    const messages = runResponse.messages;
     const latestMessage = messages[messages.length - 1]; // Get the latest message, assuming it's the response
 
     res.status(200).json({ answer: latestMessage.content.text });
