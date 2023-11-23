@@ -39,9 +39,9 @@ export default async function handler(req, res) {
 
     // Assuming the response contains the messages
     const messages = runResponse.messages;
-    const latestMessage = messages[messages.length - 1]; // Get the latest message, assuming it's the response
+    //const latestMessage = messages[messages.length - 1]; // Get the latest message, assuming it's the response
 
-    res.status(200).json({ answer: latestMessage.content.text });
+    res.status(200).json({ answer: messages });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while processing your request.' });
