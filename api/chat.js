@@ -9,7 +9,10 @@ export default async function handler(req, res) {
 
   try {
     const { sessionId, message } = req.body;
-    let threadId = req.session[sessionId]; // Adjust this line to match your session management
+    
+    // Initialize sessionThreads as a simple in-memory store. This is not suitable for production.
+    // In production, use a database or other persistent storage solutions.
+    let threadId = sessionThreads[sessionId];
 
     if (!threadId) {
       // If no thread exists for the session, create a new one
@@ -17,33 +20,34 @@ export default async function handler(req, res) {
         assistant: 'asst_3zg4c6e06kydn93j3yolP4TK', // Your assistant ID
         messages: [{ role: "user", content: message }]
       });
-      threadId = newThreadResponse.id;
-      req.session[sessionId] = threadId; // Adjust this line to match your session management
+      threadId = newThreadResponse.data.id;
+      sessionThreads[sessionId] = threadId; // Store the thread ID in your session management system
     } else {
       // If a thread exists, add a message to it
       await openai.beta.threads.messages.create(threadId, {
-        assistant: 'asst_3zg4c6e06kydn93j3yolP4TK', // Your assistant ID
         role: 'user',
         content: message
       });
     }
 
     // Run the assistant to get a response
-const run = await openai.beta.threads.runs.create(
-  threadId,
-  { 
-    assistant_id: "asst_3zg4c6e06kydn93j3yolP4TK"
-  }
-);
+    const runResponse = await openai.beta.threads.runs.create(
+      threadId,
+      { 
+        assistant_id: 'asst_3zg4c6e06kydn93j3yolP4TK'
+      }
+    );
 
-    // Extract the assistant's response
-    const messages = await openai.beta.threads.messages.list(
-  threadId
-); 
+    // Assuming the response contains the messages
+    const messages = runResponse.data.messages;
+    const latestMessage = messages[messages.length - 1]; // Get the latest message, assuming it's the response
 
-    res.status(200).json({ answer: messages });
+    res.status(200).json({ answer: latestMessage.content.text });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while processing your request.' });
   }
 }
+
+// Initialize this in your global scope if you don't have a persistent session store
+const sessionThreads = {};
