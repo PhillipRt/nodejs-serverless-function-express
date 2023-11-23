@@ -19,7 +19,7 @@ export default async function handler(req, res) {
       const newThreadResponse = await openai.beta.threads.create({
         messages: [{ role: "user", content: message }]
       });
-      threadId = newThreadResponse.data.id;
+      threadId = newThreadResponse.id;
       sessionThreads[sessionId] = threadId; // Store the thread ID in your session management system
     } else {
       // If a thread exists, add a message to it
