@@ -17,7 +17,6 @@ export default async function handler(req, res) {
     if (!threadId) {
       // If no thread exists for the session, create a new one
       const newThreadResponse = await openai.beta.threads.create({
-        assistant: 'asst_3zg4c6e06kydn93j3yolP4TK', // Your assistant ID
         messages: [{ role: "user", content: message }]
       });
       threadId = newThreadResponse.data.id;
